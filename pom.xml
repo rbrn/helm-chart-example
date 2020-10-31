@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>helm-packager</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>com.kiwigrid</groupId>
+                <artifactId>helm-maven-plugin</artifactId>
+                <version>5.6</version>
+                <configuration>
+                    <chartDirectory>${project.basedir}/charts</chartDirectory>
+                    <chartVersion>${project.version}</chartVersion>
+                    <uploadRepoStable>
+                        <name>stable-repo</name>
+                        <url>https://repo.example.com/artifactory/helm-stable</url>
+                        <!-- Artifacotry requires basic authentication -->
+                        <!-- which is supported from HELM version >= 2.9 -->
+                        <type>ARTIFACTORY</type>
+                        <username>foo</username>
+                        <password>bar</password>
+                    </uploadRepoStable>
+                    <helmDownloadUrl>https://get.helm.sh/helm-v3.0.0-linux-amd64.tar.gz</helmDownloadUrl>
+                    <helmHomeDirectory>${project.basedir}/target/helm/home</helmHomeDirectory>
+
+                    <registryConfig>~/.config/helm/registry.json</registryConfig>
+                    <repositoryCache>~/.cache/helm/repository</repositoryCache>
+                    <repositoryConfig>~/.config/helm/repositories.yaml</repositoryConfig>
+                    <!-- Lint with strict mode -->
+                    <lintStrict>true</lintStrict>
+                    <!-- Disable adding of default repo stable https://kubernetes-charts.storage.googleapis.com -->
+                    <addDefaultRepo>false</addDefaultRepo>
+                    <!-- Exclude a directory to avoid processing -->
+                    <excludes>
+                        <exclude>${project.basedir}/excluded</exclude>
+                        <exclude>${project.basedir}/**/excluded*</exclude>
+                    </excludes>
+                    <values>
+                        <overrides>
+                            <component1.install.path>/opt/component1</component1.install.path>
+                        </overrides>
+                        <yamlFile>${project.basedir}/src/test/resources/myOverrides.yaml</yamlFile>
+                    </values>
+                    <useLocalHelmBinary>true</useLocalHelmBinary>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
